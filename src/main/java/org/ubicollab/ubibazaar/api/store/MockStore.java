@@ -1,5 +1,7 @@
 package org.ubicollab.ubibazaar.api.store;
 
+import java.util.UUID;
+
 import org.ubicollab.ubibazaar.core.App;
 import org.ubicollab.ubibazaar.core.Cardinality;
 import org.ubicollab.ubibazaar.core.Device;
@@ -25,6 +27,10 @@ public class MockStore {
   public static final Platform ARDUINO = Platform.builder()
       .id(2L)
       .name("Arduino")
+      .build();
+  public static final Platform LINUX_X64 = Platform.builder()
+      .id(679L)
+      .name("Linux x64")
       .build();
 
   public static final InstallationMethod DOCKER = InstallationMethod.builder()
@@ -52,6 +58,13 @@ public class MockStore {
       .devicePairingCardinality(Cardinality.ALL)
       .installationMethod(ARDUINO_BT)
       .build();
+  public static final ManagerType AHAB_LINUX_X64 = ManagerType.builder()
+      .id(5480943L)
+      .name("Ahab for Linux x64")
+      .platform(LINUX_X64)
+      .devicePairingCardinality(Cardinality.ONE)
+      .installationMethod(DOCKER)
+      .build();
 
   // user
   public static final User SIMON = User.builder()
@@ -66,6 +79,12 @@ public class MockStore {
       .build();
 
   // device and manager
+  public static final Device CURARE = Device.builder()
+      .id(493078L)
+      .name("Curare")
+      .platform(LINUX_X64)
+      .owner(SIMON)
+      .build();
   public static final Device PEQUOD = Device.builder()
       .id(1L)
       .name("Pequod")
@@ -103,6 +122,12 @@ public class MockStore {
       .owner(OLA)
       .build();
 
+  public static final Manager AHAB_ON_CURARE = Manager.builder()
+      .id(423987L)
+      .name("Ahab on Curare")
+      .type(AHAB_LINUX_X64)
+      .devices(ImmutableList.of(CURARE))
+      .build();
   public static final Manager AHAB_ON_PEQUOD = Manager.builder()
       .id(1L)
       .name("AHAB_ON_PEQUOD")
@@ -150,8 +175,20 @@ public class MockStore {
       .author(OLA)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "jihocech/JCK"))
       .build();
+  public static final App BUSYBOX = App.builder()
+      .id(845548L)
+      .name("Busybox")
+      .platform(LINUX_X64)
+      .author(OLA)
+      .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "busybox", "ports", ""))
+      .build();
 
   // installations
+  public static final Installation BUSYBOX_RUNNING_ON_CURARE = Installation.builder()
+      .id(283776L)
+      .app(BUSYBOX)
+      .device(CURARE)
+      .build();
   public static final Installation COSSMIC_RUNNING_ON_PEQUOD = Installation.builder()
       .id(123L)
       .app(COSSMIC)
@@ -188,6 +225,7 @@ public class MockStore {
   public static final ImmutableList<Platform> platforms = ImmutableList.<Platform>builder()
       .add(RPI)
       .add(ARDUINO)
+      .add(LINUX_X64)
       .build();
 
   public static final ImmutableList<InstallationMethod> installationMethods = ImmutableList
@@ -199,6 +237,7 @@ public class MockStore {
   public static final ImmutableList<ManagerType> managerTypes = ImmutableList
       .<ManagerType>builder()
       .add(AHAB_RPI)
+      .add(AHAB_LINUX_X64)
       .add(MCSS)
       .build();
 
@@ -211,6 +250,7 @@ public class MockStore {
       .add(COSSMIC)
       .add(ARDUINO_APP)
       .add(FRMS)
+      .add(BUSYBOX)
       .build();
 
   public static final ImmutableList<Device> devices = ImmutableList.<Device>builder()
@@ -220,6 +260,7 @@ public class MockStore {
       .add(PEQUOD)
       .add(AKUTAN_ZERO)
       .add(BLACK_PEARL)
+      .add(CURARE)
       .build();
 
   public static final ImmutableList<Manager> managers = ImmutableList.<Manager>builder()
@@ -227,6 +268,7 @@ public class MockStore {
       .add(AHAB_ON_KOBAYASHI_MARU)
       .add(AHAB_ON_PEQUOD)
       .add(SIMONS_MSCC)
+      .add(AHAB_ON_CURARE)
       .build();
 
   public static final ImmutableList<Installation> installations = ImmutableList
@@ -237,6 +279,11 @@ public class MockStore {
       .add(APP_RUNNING_ON_BOCKSCAR)
       .add(APP_RUNNING_ON_ENOLA_GAY)
       .add(FRMS_RUNNING_ON_PEQUOD)
+      .add(BUSYBOX_RUNNING_ON_CURARE)
       .build();
+  
+  public static void main(String[] args) {
+    System.out.println(UUID.randomUUID());
+  }
 
 }
