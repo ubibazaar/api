@@ -13,7 +13,7 @@ public class PingResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAllApps() throws UnknownHostException {
+  public String ping() throws UnknownHostException {
     return new Gson().toJson(ImmutableMap.of("pong", System.currentTimeMillis()));
   }
 
