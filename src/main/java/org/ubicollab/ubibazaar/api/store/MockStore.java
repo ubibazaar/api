@@ -175,18 +175,18 @@ public class MockStore {
       .author(OLA)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "jihocech/JCK"))
       .build();
-  public static final App BUSYBOX = App.builder()
+  public static final App NGINX = App.builder()
       .id(845548L)
-      .name("Busybox")
+      .name("nginx")
       .platform(LINUX_X64)
       .author(OLA)
-      .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "busybox", "ports", ""))
+      .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "nginx", "ports", ""))
       .build();
 
   // installations
-  public static final Installation BUSYBOX_RUNNING_ON_CURARE = Installation.builder()
+  public static final Installation NGINX_RUNNING_ON_CURARE = Installation.builder()
       .id(283776L)
-      .app(BUSYBOX)
+      .app(NGINX)
       .device(CURARE)
       .build();
   public static final Installation COSSMIC_RUNNING_ON_PEQUOD = Installation.builder()
@@ -250,7 +250,7 @@ public class MockStore {
       .add(COSSMIC)
       .add(ARDUINO_APP)
       .add(FRMS)
-      .add(BUSYBOX)
+      .add(NGINX)
       .build();
 
   public static final ImmutableList<Device> devices = ImmutableList.<Device>builder()
@@ -279,7 +279,7 @@ public class MockStore {
       .add(APP_RUNNING_ON_BOCKSCAR)
       .add(APP_RUNNING_ON_ENOLA_GAY)
       .add(FRMS_RUNNING_ON_PEQUOD)
-      .add(BUSYBOX_RUNNING_ON_CURARE)
+      .add(NGINX_RUNNING_ON_CURARE)
       .build();
   
   public static void main(String[] args) {
