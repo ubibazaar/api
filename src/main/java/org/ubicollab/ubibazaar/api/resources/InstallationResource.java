@@ -38,7 +38,7 @@ public class InstallationResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") Long id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
     return new Gson().toJson(MockStore.installations.stream()
         .filter(i -> i.getId().equals(id))
         .findAny()
@@ -49,9 +49,9 @@ public class InstallationResource {
   @Path("query")
   @Produces(MediaType.APPLICATION_JSON)
   public String getForQuery(
-      @QueryParam(value = "app") Long app,
-      @QueryParam(value = "device") Long device,
-      @QueryParam(value = "user") Long user
+      @QueryParam(value = "app") String app,
+      @QueryParam(value = "device") String device,
+      @QueryParam(value = "user") String user
       )
           throws UnknownHostException {
     return new Gson()

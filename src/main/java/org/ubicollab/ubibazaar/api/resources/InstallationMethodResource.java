@@ -26,7 +26,7 @@ public class InstallationMethodResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") Long id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
     return new Gson().toJson(MockStore.installationMethods.stream()
         .filter(im -> im.getId().equals(id))
         .findAny()

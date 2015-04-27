@@ -28,7 +28,7 @@ public class AppResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") Long id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
     return new Gson().toJson(MockStore.apps.stream()
         .filter(a -> a.getId().equals(id))
         .findAny()
@@ -39,8 +39,8 @@ public class AppResource {
   @Path("query")
   @Produces(MediaType.APPLICATION_JSON)
   public String getForQuery(
-      @QueryParam(value = "platform") Long platform,
-      @QueryParam(value = "author") Long author
+      @QueryParam(value = "platform") String platform,
+      @QueryParam(value = "author") String author
       )
           throws UnknownHostException {
     return new Gson().toJson(MockStore.apps.stream()

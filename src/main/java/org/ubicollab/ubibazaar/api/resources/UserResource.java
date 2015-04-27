@@ -28,7 +28,7 @@ public class UserResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") Long id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
     return new Gson().toJson(MockStore.users.stream()
         .filter(u -> u.getId().equals(id))
         .findAny()

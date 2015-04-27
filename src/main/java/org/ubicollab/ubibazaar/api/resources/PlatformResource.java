@@ -25,7 +25,7 @@ public class PlatformResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") Long id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
     return new Gson().toJson(MockStore.platforms.stream()
         .filter(p -> p.getId().equals(id))
         .findAny()

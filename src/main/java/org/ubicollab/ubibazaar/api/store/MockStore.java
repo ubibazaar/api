@@ -18,48 +18,52 @@ import com.google.common.collect.ImmutableMap;
 public class MockStore {
   private static final String ARDUINO_SOURCE_FILE = "arduino_source_file";
   private static final String DOCKER_HUB_REPO_PROPERTY = "docker_hub_repo";
+  
+  private static String generateId() {
+    return UUID.randomUUID().toString().replace("-", "");
+  }
 
   // platform, deployment method and manager type
   public static final Platform RPI = Platform.builder()
-      .id(1L)
+      .id(generateId())
       .name("Raspbery Pi")
       .build();
   public static final Platform ARDUINO = Platform.builder()
-      .id(2L)
+      .id(generateId())
       .name("Arduino")
       .build();
   public static final Platform LINUX_X64 = Platform.builder()
-      .id(679L)
+      .id(generateId())
       .name("Linux x64")
       .build();
 
   public static final InstallationMethod DOCKER = InstallationMethod.builder()
-      .id(1L)
+      .id(generateId())
       .name("Docker")
       .properties(ImmutableList.of(DOCKER_HUB_REPO_PROPERTY))
       .build();
   public static final InstallationMethod ARDUINO_BT = InstallationMethod.builder()
-      .id(2L)
+      .id(generateId())
       .name("Arduino Bluetooth Deployment")
       .properties(ImmutableList.of(ARDUINO_SOURCE_FILE))
       .build();
 
   public static final ManagerType AHAB_RPI = ManagerType.builder()
-      .id(1L)
+      .id(generateId())
       .name("Ahab")
       .platform(RPI)
       .devicePairingCardinality(Cardinality.ONE)
       .installationMethod(DOCKER)
       .build();
   public static final ManagerType MCSS = ManagerType.builder()
-      .id(2L)
+      .id(generateId())
       .name("MCSS for Android")
       .platform(ARDUINO)
       .devicePairingCardinality(Cardinality.ALL)
       .installationMethod(ARDUINO_BT)
       .build();
   public static final ManagerType AHAB_LINUX_X64 = ManagerType.builder()
-      .id(5480943L)
+      .id(generateId())
       .name("Ahab for Linux x64")
       .platform(LINUX_X64)
       .devicePairingCardinality(Cardinality.ONE)
@@ -68,86 +72,86 @@ public class MockStore {
 
   // user
   public static final User SIMON = User.builder()
-      .id(1L)
+      .id(generateId())
       .username("simon")
       .name("Simon Stastny")
       .build();
   public static final User OLA = User.builder()
-      .id(2L)
+      .id(generateId())
       .username("ola")
       .name("Ola Nordmann")
       .build();
 
   // device and manager
   public static final Device CURARE = Device.builder()
-      .id(493078L)
+      .id(generateId())
       .name("Curare")
       .platform(LINUX_X64)
       .owner(SIMON)
       .build();
   public static final Device PEQUOD = Device.builder()
-      .id(1L)
+      .id(generateId())
       .name("Pequod")
       .platform(RPI)
       .owner(SIMON)
       .build();
   public static final Device BLACK_PEARL = Device.builder()
-      .id(2L)
+      .id(generateId())
       .name("Black Pearl")
       .platform(RPI)
       .owner(SIMON)
       .build();
   public static final Device KOBAYASHI_MARU = Device.builder()
-      .id(3L)
+      .id(generateId())
       .name("Kobayashi Maru")
       .platform(RPI)
       .owner(SIMON)
       .build();
   public static final Device ENOLA_GAY = Device.builder()
-      .id(4L)
+      .id(generateId())
       .name("Enola Gay")
       .platform(ARDUINO)
       .owner(SIMON)
       .build();
   public static final Device BOCKSCAR = Device.builder()
-      .id(5L)
+      .id(generateId())
       .name("Bockscar")
       .platform(ARDUINO)
       .owner(SIMON)
       .build();
   public static final Device AKUTAN_ZERO = Device.builder()
-      .id(6L)
+      .id(generateId())
       .name("Akutan Zero")
       .platform(ARDUINO)
       .owner(OLA)
       .build();
 
   public static final Manager AHAB_ON_CURARE = Manager.builder()
-      .id(423987L)
+      .id("1aa191aac64b4770ba6fc05bc36cf1f5")
       .name("Ahab on Curare")
       .type(AHAB_LINUX_X64)
       .devices(ImmutableList.of(CURARE))
       .build();
   public static final Manager AHAB_ON_PEQUOD = Manager.builder()
-      .id(1L)
+      .id(generateId())
       .name("AHAB_ON_PEQUOD")
       .type(AHAB_RPI)
       .devices(ImmutableList.of(PEQUOD))
       .build();
   public static final Manager AHAB_ON_BLACK_PEARL = Manager.builder()
-      .id(2L)
+      .id(generateId())
       .name("AHAB_ON_BLACK_PEARL")
       .type(AHAB_RPI)
       .devices(ImmutableList.of(BLACK_PEARL))
       .build();
   public static final Manager AHAB_ON_KOBAYASHI_MARU = Manager.builder()
-      .id(3L)
+      .id(generateId())
       .name("AHAB_ON_KOBAYASHI_MARU")
       .type(AHAB_RPI)
       .devices(ImmutableList.of(KOBAYASHI_MARU))
       .build();
   public static final Manager SIMONS_MSCC = Manager.builder()
-      .id(4L)
+      .id(generateId())
       .name("Simon's MCSS")
       .type(MCSS)
       .devices(ImmutableList.of(AKUTAN_ZERO, BOCKSCAR, ENOLA_GAY))
@@ -155,28 +159,28 @@ public class MockStore {
 
   // app
   public static final App COSSMIC = App.builder()
-      .id(1L)
+      .id(generateId())
       .name("CoSSMIC EMonCMS")
       .platform(RPI)
       .author(SIMON)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "simonstastny/cossmic"))
       .build();
   public static final App ARDUINO_APP = App.builder()
-      .id(2L)
+      .id(generateId())
       .name("Random Arduino App")
       .platform(ARDUINO)
       .author(SIMON)
       .properties(ImmutableMap.of(ARDUINO_SOURCE_FILE, "import fdf lisfysfly fy sufy sdfy"))
       .build();
   public static final App FRMS = App.builder()
-      .id(3L)
+      .id(generateId())
       .name("Jihocesky Kotel")
       .platform(RPI)
       .author(OLA)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "jihocech/JCK"))
       .build();
   public static final App NGINX = App.builder()
-      .id(845548L)
+      .id(generateId())
       .name("nginx")
       .platform(LINUX_X64)
       .author(OLA)
@@ -185,37 +189,37 @@ public class MockStore {
 
   // installations
   public static final Installation NGINX_RUNNING_ON_CURARE = Installation.builder()
-      .id(283776L)
+      .id(generateId())
       .app(NGINX)
       .device(CURARE)
       .build();
   public static final Installation COSSMIC_RUNNING_ON_PEQUOD = Installation.builder()
-      .id(123L)
+      .id(generateId())
       .app(COSSMIC)
       .device(PEQUOD)
       .build();
   public static final Installation FRMS_RUNNING_ON_PEQUOD = Installation.builder()
-      .id(321L)
+      .id(generateId())
       .app(FRMS)
       .device(PEQUOD)
       .build();
   public static final Installation COSSMIC_RUNNING_ON_BLACK_PEARL = Installation.builder()
-      .id(456L)
+      .id(generateId())
       .app(COSSMIC)
       .device(BLACK_PEARL)
       .build();
   public static final Installation COSSMIC_RUNNING_ON_KOBAYASHI_MARU = Installation.builder()
-      .id(789L)
+      .id(generateId())
       .app(COSSMIC)
       .device(KOBAYASHI_MARU)
       .build();
   public static final Installation APP_RUNNING_ON_BOCKSCAR = Installation.builder()
-      .id(987L)
+      .id(generateId())
       .app(ARDUINO_APP)
       .device(BOCKSCAR)
       .build();
   public static final Installation APP_RUNNING_ON_ENOLA_GAY = Installation.builder()
-      .id(654L)
+      .id(generateId())
       .app(ARDUINO_APP)
       .device(ENOLA_GAY)
       .build();

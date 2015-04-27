@@ -28,7 +28,7 @@ public class ManagerTypeResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") Long id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
     return new Gson().toJson(MockStore.managerTypes.stream()
         .filter(mt -> mt.getId().equals(id))
         .findAny()
@@ -39,8 +39,8 @@ public class ManagerTypeResource {
   @Path("query")
   @Produces(MediaType.APPLICATION_JSON)
   public String getForQuery(
-      @QueryParam(value = "platform") Long platform,
-      @QueryParam(value = "installation_method") Long installationMethod
+      @QueryParam(value = "platform") String platform,
+      @QueryParam(value = "installation_method") String installationMethod
       )
           throws UnknownHostException {
     return new Gson()
