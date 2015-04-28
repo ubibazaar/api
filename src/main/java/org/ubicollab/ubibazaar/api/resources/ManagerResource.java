@@ -1,6 +1,5 @@
 package org.ubicollab.ubibazaar.api.resources;
 
-import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -21,14 +20,14 @@ public class ManagerResource {
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAll() throws UnknownHostException {
+  public String getAll() {
     return new Gson().toJson(MockStore.managers);
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) {
     return new Gson().toJson(MockStore.managers.stream()
         .filter(manager -> manager.getId().equals(id))
         .findAny()
@@ -42,14 +41,13 @@ public class ManagerResource {
       @QueryParam(value = "platform") String type,
       @QueryParam(value = "owner") String owner,
       @QueryParam(value = "device") String device
-      )
-          throws UnknownHostException {
+      ) {
     return new Gson()
         .toJson(MockStore.managers
             .stream()
-            .filter(manager -> Objects.isNull(type) 
+            .filter(manager -> Objects.isNull(type)
                 || manager.getType().getId().equals(type))
-            .filter(manager -> Objects.isNull(owner) 
+            .filter(manager -> Objects.isNull(owner)
                 || manager.getOwner().getId().equals(owner))
             .filter(manager -> Objects.isNull(device)
                 || manager.getDevices().stream()

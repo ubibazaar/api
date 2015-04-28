@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableMap;
 public class MockStore {
   private static final String ARDUINO_SOURCE_FILE = "arduino_source_file";
   private static final String DOCKER_HUB_REPO_PROPERTY = "docker_hub_repo";
-  
+
   private static String generateId() {
     return UUID.randomUUID().toString().replace("-", "");
   }
@@ -158,29 +158,35 @@ public class MockStore {
       .build();
 
   // app
-  public static final App COSSMIC = App.builder()
+  public static final App COSSMIC = App
+      .builder()
       .id(generateId())
       .name("CoSSMIC EMonCMS")
       .platform(RPI)
       .author(SIMON)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "simonstastny/cossmic"))
-      .category(ImmutableList.of(CategoryCache.getCategoryAncestry("f47754d0c689443ebc1bbf0cd2c8bd86")))
+      .category(
+          ImmutableList.of(CategoryCache.getCategoryAncestry("f47754d0c689443ebc1bbf0cd2c8bd86")))
       .build();
-  public static final App ARDUINO_APP = App.builder()
+  public static final App ARDUINO_APP = App
+      .builder()
       .id(generateId())
       .name("Random Arduino App")
       .platform(ARDUINO)
       .author(SIMON)
       .properties(ImmutableMap.of(ARDUINO_SOURCE_FILE, "import fdf lisfysfly fy sufy sdfy"))
-      .category(ImmutableList.of(CategoryCache.getCategoryAncestry("90f26db670434fe99da395ec1652d784")))
+      .category(
+          ImmutableList.of(CategoryCache.getCategoryAncestry("90f26db670434fe99da395ec1652d784")))
       .build();
-  public static final App FRMS = App.builder()
+  public static final App FRMS = App
+      .builder()
       .id(generateId())
       .name("Jihocesky Kotel")
       .platform(RPI)
       .author(OLA)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "jihocech/JCK"))
-      .category(ImmutableList.of(CategoryCache.getCategoryAncestry("a5b108addf094fbda7d20270538d4e1c")))
+      .category(
+          ImmutableList.of(CategoryCache.getCategoryAncestry("a5b108addf094fbda7d20270538d4e1c")))
       .build();
   public static final App NGINX = App.builder()
       .id(generateId())
@@ -288,7 +294,7 @@ public class MockStore {
       .add(FRMS_RUNNING_ON_PEQUOD)
       .add(NGINX_RUNNING_ON_CURARE)
       .build();
-  
+
   public static void main(String[] args) {
     System.out.println(UUID.randomUUID());
   }

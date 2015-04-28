@@ -1,6 +1,5 @@
 package org.ubicollab.ubibazaar.api.resources;
 
-import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -29,16 +28,16 @@ public class InstallationResource {
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAll() throws UnknownHostException {
+  public String getAll() {
     log.info("hello");
-    
+
     return new Gson().toJson(MockStore.installations);
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) {
     return new Gson().toJson(MockStore.installations.stream()
         .filter(i -> i.getId().equals(id))
         .findAny()
@@ -52,8 +51,7 @@ public class InstallationResource {
       @QueryParam(value = "app") String app,
       @QueryParam(value = "device") String device,
       @QueryParam(value = "user") String user
-      )
-          throws UnknownHostException {
+      ) {
     return new Gson()
         .toJson(MockStore.installations
             .stream()
@@ -76,7 +74,7 @@ public class InstallationResource {
     // - no: new installation, store, return including ID
     // - yes: updated properties, store, return
     log.info("Received updated installation {}", new Gson().toJson(installation));
-    
+
     MockStore.installations.stream()
         .filter(i -> i.getId().equals(installation.getId()))
         .findFirst().get()

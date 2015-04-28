@@ -1,7 +1,5 @@
 package org.ubicollab.ubibazaar.api.resources;
 
-import java.net.UnknownHostException;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,14 +17,14 @@ public class InstallationMethodResource {
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAll() throws UnknownHostException {
+  public String getAll() {
     return new Gson().toJson(MockStore.installationMethods);
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) {
     return new Gson().toJson(MockStore.installationMethods.stream()
         .filter(im -> im.getId().equals(id))
         .findAny()

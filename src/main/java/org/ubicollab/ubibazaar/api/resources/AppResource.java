@@ -1,6 +1,5 @@
 package org.ubicollab.ubibazaar.api.resources;
 
-import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -21,14 +20,14 @@ public class AppResource {
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAll() throws UnknownHostException {
+  public String getAll() {
     return new Gson().toJson(MockStore.apps);
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") String id) throws UnknownHostException {
+  public String getById(@PathParam(value = "id") String id) {
     return new Gson().toJson(MockStore.apps.stream()
         .filter(a -> a.getId().equals(id))
         .findAny()
@@ -41,12 +40,11 @@ public class AppResource {
   public String getForQuery(
       @QueryParam(value = "platform") String platform,
       @QueryParam(value = "author") String author
-      )
-          throws UnknownHostException {
+      ) {
     return new Gson().toJson(MockStore.apps.stream()
-        .filter(a -> Objects.isNull(platform) 
+        .filter(a -> Objects.isNull(platform)
             || a.getPlatform().getId().equals(platform))
-        .filter(a -> Objects.isNull(author) 
+        .filter(a -> Objects.isNull(author)
             || a.getAuthor().getId().equals(author))
         .collect(Collectors.toList()));
   }

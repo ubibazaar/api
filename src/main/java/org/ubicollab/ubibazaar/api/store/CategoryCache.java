@@ -2,10 +2,8 @@ package org.ubicollab.ubibazaar.api.store;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -16,7 +14,6 @@ import org.ubicollab.ubibazaar.core.Category;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
 
 // FIXME revoke relation cache if new category was added or one removed..
 
@@ -35,14 +32,14 @@ public class CategoryCache {
   public static Category getCategoryTree(String categoryId) {
     // special case, looking for root
     if (categoryId == null) {
-      if(relationCache.asMap().isEmpty()) {
+      if (relationCache.asMap().isEmpty()) {
         try {
           relationCache.get("fakekey");
         } catch (Exception e) {
           // do nothing, this is expected to fail
         }
       }
-      
+
       categoryId = relationCache.asMap().entrySet().stream()
           .filter(entry -> entry.getKey().equals(entry.getValue()))
           .findFirst().get().getKey();
@@ -160,13 +157,6 @@ public class CategoryCache {
 
       return result;
     }
-  }
-
-  public static void main(String[] args) throws SQLException, ExecutionException {
-    log.info("category ancestry of energy-monitoring {}",
-        new Gson().toJson(CategoryCache.getCategoryAncestry("f47754d0c689443ebc1bbf0cd2c8bd86")));
-    log.info("category tree of root {}",
-        new Gson().toJson(CategoryCache.getCategoryTree("4220f24cd59f4ef6b2b07f74a1e264bd")));
   }
 
 }

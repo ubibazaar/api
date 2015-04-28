@@ -17,8 +17,7 @@ public class Database {
       InputStream in = Database.class.getResourceAsStream("/db.properties");
       prop.load(in);
       in.close();
-      
-      
+
       cpds = new ComboPooledDataSource();
       cpds.setDriverClass("com.mysql.jdbc.Driver");
 
@@ -37,5 +36,5 @@ public class Database {
   public static Connection getConnection() throws SQLException {
     return cpds.getConnection();
   }
-  
+
 }
