@@ -35,6 +35,14 @@ public class CategoryCache {
   public static Category getCategoryTree(String categoryId) {
     // special case, looking for root
     if (categoryId == null) {
+      if(relationCache.asMap().isEmpty()) {
+        try {
+          relationCache.get("fakekey");
+        } catch (Exception e) {
+          // do nothing, this is expected to fail
+        }
+      }
+      
       categoryId = relationCache.asMap().entrySet().stream()
           .filter(entry -> entry.getKey().equals(entry.getValue()))
           .findFirst().get().getKey();
@@ -118,7 +126,7 @@ public class CategoryCache {
       }
 
       if (result == null) {
-        throw new IllegalArgumentException("Category " + key + " has no parent.");
+        throw new IllegalArgumentException("Category " + key + " does nt exist.");
       }
 
       return result;
@@ -147,7 +155,7 @@ public class CategoryCache {
       }
 
       if (result == null) {
-        throw new IllegalArgumentException("Category " + key + " has no parent.");
+        throw new IllegalArgumentException("Category " + key + " does not exist.");
       }
 
       return result;

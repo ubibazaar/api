@@ -164,6 +164,7 @@ public class MockStore {
       .platform(RPI)
       .author(SIMON)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "simonstastny/cossmic"))
+      .category(ImmutableList.of(CategoryCache.getCategoryAncestry("f47754d0c689443ebc1bbf0cd2c8bd86")))
       .build();
   public static final App ARDUINO_APP = App.builder()
       .id(generateId())
@@ -171,6 +172,7 @@ public class MockStore {
       .platform(ARDUINO)
       .author(SIMON)
       .properties(ImmutableMap.of(ARDUINO_SOURCE_FILE, "import fdf lisfysfly fy sufy sdfy"))
+      .category(ImmutableList.of(CategoryCache.getCategoryAncestry("90f26db670434fe99da395ec1652d784")))
       .build();
   public static final App FRMS = App.builder()
       .id(generateId())
@@ -178,6 +180,7 @@ public class MockStore {
       .platform(RPI)
       .author(OLA)
       .properties(ImmutableMap.of(DOCKER_HUB_REPO_PROPERTY, "jihocech/JCK"))
+      .category(ImmutableList.of(CategoryCache.getCategoryAncestry("a5b108addf094fbda7d20270538d4e1c")))
       .build();
   public static final App NGINX = App.builder()
       .id(generateId())
