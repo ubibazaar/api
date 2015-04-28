@@ -14,7 +14,7 @@ public class Database {
   static {
     try {
       Properties prop = new Properties();
-      InputStream in = Database.class.getResourceAsStream("/api.properties");
+      InputStream in = Database.class.getResourceAsStream("/db.properties");
       prop.load(in);
       in.close();
       
