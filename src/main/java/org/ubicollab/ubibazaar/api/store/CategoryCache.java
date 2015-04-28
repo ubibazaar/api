@@ -18,23 +18,18 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 
-// FIXME possible race conditions.. check
+// FIXME revoke relation cache if new category was added or one removed..
 
 @Slf4j
 public class CategoryCache {
 
   private static final LoadingCache<String, String> relationCache = CacheBuilder.newBuilder()
-      .maximumSize(1000)
       .expireAfterWrite(10, TimeUnit.MINUTES)
-      // .removalListener(null) // FIXME listen and reload
       .build(new RelationLoader());
 
-  // FIXME optimzie
-  private static final LoadingCache<String, Category> cache = CacheBuilder.newBuilder()
-      .maximumSize(1000)
+  private static final LoadingCache<String, String> nameCache = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES)
-      // .removalListener(null) // FIXME listen and reload
-      .build(new CategoryLoader());
+      .build(new NameLoader());
 
 
   public static Category getCategoryTree(String categoryId) {
@@ -45,47 +40,45 @@ public class CategoryCache {
           .findFirst().get().getKey();
     }
 
-    // find tree root and link subcategories, going down each branch depth-first
-    Category treeRoot = cache.getUnchecked(categoryId);
+    // find name of tree root and construct the root
+    String name = nameCache.getUnchecked(categoryId);
+    Category treeRoot = new Category(categoryId, name, null, null);
+
+    // link subcategories, going down each branch depth-first
     linkSubCategories(treeRoot);
 
     return treeRoot;
   }
 
-  // FIXME terminology
   private static void linkSubCategories(Category superCategory) {
-    relationCache.asMap().entrySet().stream()
+    // find subcategories
+    Set<String> subCategoriesIds = relationCache.asMap().entrySet().stream()
         .filter(entry -> entry.getValue().equals(superCategory.getId())) // with this parent
-        .filter(entry -> !entry.getKey().equals(entry.getValue())) // not themself, if root
-        .forEach(x -> log.info("{} has child {}", superCategory.getName(), x.getKey()));
-    // .map(entry -> cache.getUnchecked(entry.getKey()))
-    // .collect(Collectors.toSet());
-
-    Set<Category> subCategories = relationCache.asMap().entrySet().stream()
-        .filter(entry -> entry.getValue().equals(superCategory.getId())) // with this parent
-        .filter(entry -> !entry.getKey().equals(entry.getValue())) // not themself, if root
-        .map(entry -> cache.getUnchecked(entry.getKey()))
+        .filter(entry -> !entry.getKey().equals(entry.getValue())) // skip root, parent of itself
+        .map(entry -> entry.getKey())
         .collect(Collectors.toSet());
 
-    for (Category subCategory : subCategories) {
-      log.info("{} has sub category {}", superCategory.getName(), subCategory.getName());
+    // go in depth-first and link
+    for (String subCategoryId : subCategoriesIds) {
+      String name = nameCache.getUnchecked(subCategoryId);
+      Category subCategory = new Category(subCategoryId, name, null, null);
+
       superCategory.addSubCategory(subCategory);
-      // subCategory.setSuperCategory(superCategory);
 
       linkSubCategories(subCategory);
     }
   }
 
   public static Category getCategoryAncestry(String categoryId) {
-    Category leaf = cache.getUnchecked(categoryId);
+    String name = nameCache.getUnchecked(categoryId);
+    Category leaf = new Category(categoryId, name, null, null);
     Category category = leaf;
 
     while (true) {
       // find parent
       String superCategoryId = relationCache.getUnchecked(category.getId());
-      Category superCategory = cache.getUnchecked(superCategoryId);
-      
-      log.info("{} has parent {} {}", category.getId(), superCategory.getId(), superCategoryId);
+      String superCategoryName = nameCache.getUnchecked(superCategoryId);
+      Category superCategory = new Category(superCategoryId, superCategoryName, null, null);
 
       // if we found the root, break
       if (superCategoryId.equals(category.getId())) {
@@ -102,26 +95,25 @@ public class CategoryCache {
     return leaf;
   }
 
-  private static final class CategoryLoader extends CacheLoader<String, Category> {
-    public Category load(String key) throws Exception {
-      log.warn("Missing key {} in category cache, reloading");
+  private static final class NameLoader extends CacheLoader<String, String> {
+    public String load(String key) throws Exception {
+      log.warn("Missing key {} in name cache, reloading");
 
       Connection connection = Database.getConnection();
       Statement ps = connection.createStatement();
       ps.execute("SELECT id, name FROM category");
       ResultSet rs = ps.getResultSet();
 
-      Category result = null;
+      String result = null;
 
       while (rs.next()) {
         String id = rs.getString("id");
         String name = rs.getString("name");
-        Category category = new Category(id, name, null, null);
 
-        cache.put(id, category);
+        nameCache.put(id, name);
 
         if (id.equals(key)) {
-          result = category;
+          result = name;
         }
       }
 
@@ -131,8 +123,6 @@ public class CategoryCache {
 
       return result;
     }
-
-    // FIXME load all
   }
 
   private static final class RelationLoader extends CacheLoader<String, String> {
@@ -162,39 +152,13 @@ public class CategoryCache {
 
       return result;
     }
-
-    // FIXME load all
   }
 
   public static void main(String[] args) throws SQLException, ExecutionException {
-
-    // Connection connection = Database.getConnection();
-    //
-    // PreparedStatement ps = connection.prepareStatement("SELECT * FROM category");
-    //
-    // ps.execute();
-    //
-    // ResultSet rs = ps.getResultSet();
-    //
-    // while (rs.next()) {
-    // log.info("Found category {} with id {} and parent {}", rs.getString("name"),
-    // rs.getString("id"), rs.getString("parent_id"));
-    // }
-    // log.info("parent of {} is {}", "f47754d0c689443ebc1bbf0cd2c8bd86",
-    // cc.relationCache.getUnchecked("f47754d0c689443ebc1bbf0cd2c8bd86"));
-    //
-    // log.info(cc.relationCache.asMap().toString());
-    //
-    // Category categoryTree = cc.getCategoryTree(null);
-    // log.info(categoryTree.getName());
-    //
-    // log.info(new Gson().toJson(categoryTree));
-
-    CategoryCache.relationCache.getUnchecked("f47754d0c689443ebc1bbf0cd2c8bd86");
-    log.info(CategoryCache.relationCache.asMap().toString());
-    log.info(new Gson().toJson(CategoryCache.getCategoryAncestry("f47754d0c689443ebc1bbf0cd2c8bd86")));
-    log.info(new Gson().toJson(CategoryCache.getCategoryTree("f47754d0c689443ebc1bbf0cd2c8bd86")));
-
+    log.info("category ancestry of energy-monitoring {}",
+        new Gson().toJson(CategoryCache.getCategoryAncestry("f47754d0c689443ebc1bbf0cd2c8bd86")));
+    log.info("category tree of root {}",
+        new Gson().toJson(CategoryCache.getCategoryTree("4220f24cd59f4ef6b2b07f74a1e264bd")));
   }
 
 }
