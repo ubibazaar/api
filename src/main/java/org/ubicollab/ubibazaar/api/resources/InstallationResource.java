@@ -1,5 +1,6 @@
 package org.ubicollab.ubibazaar.api.resources;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -14,82 +15,82 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.ubicollab.ubibazaar.api.store.MockStore;
+import org.ubicollab.ubibazaar.api.ServerProperties;
+import org.ubicollab.ubibazaar.api.store.InstallationStore;
 import org.ubicollab.ubibazaar.core.Installation;
 
 import com.google.gson.Gson;
 
-@Slf4j
 @Path("installations")
 public class InstallationResource {
 
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAll() {
-    log.info("hello");
-
-    return new Gson().toJson(MockStore.installations);
+  public Response getAll() {
+    return Response.ok(new Gson().toJson(InstallationStore.getAll())).build();
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getById(@PathParam(value = "id") String id) {
-    return new Gson().toJson(MockStore.installations.stream()
-        .filter(i -> i.getId().equals(id))
-        .findAny()
-        .get());
+  public Response getById(@PathParam(value = "id") String id) {
+    Installation found = InstallationStore.getById(id);
+
+    // fail fast and return error if does not exist
+    // check for existence of the entity
+    if (found == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    return Response.ok(new Gson().toJson(found)).build();
   }
 
   @GET
   @Path("query")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getForQuery(
+  public Response getForQuery(
       @QueryParam(value = "app") String app,
       @QueryParam(value = "device") String device,
       @QueryParam(value = "user") String user
       ) {
-    return new Gson()
-        .toJson(MockStore.installations
-            .stream()
-            .filter(i -> Objects.isNull(app)
-                || i.getApp().getId().equals(app))
-            .filter(i -> Objects.isNull(device)
-                || i.getDevice().getId().equals(device))
-            .filter(i -> Objects.isNull(user)
-                || i.getDevice().getOwner().getId().equals(user))
-            .collect(Collectors.toList()));
+    return Response.ok(new Gson().toJson(InstallationStore.getAll().stream()
+        .filter(i -> Objects.isNull(app)
+            || i.getApp().getId().equals(app))
+        .filter(i -> Objects.isNull(device)
+            || i.getDevice().getId().equals(device))
+        .filter(i -> Objects.isNull(user)
+            || i.getDevice().getOwner().getId().equals(user))
+        .collect(Collectors.toList())))
+        .build();
   }
 
   @POST
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response save(Installation installation) {
-    // TODO check if device belongs to user
-    // TODO check if has id.. should be in the adress actually
-    // - no: new installation, store, return including ID
-    // - yes: updated properties, store, return
-    log.info("Received updated installation {}", new Gson().toJson(installation));
+  public Response create(Installation installation) {
+    // create installation
+    Installation created = InstallationStore.create(installation);
 
-    MockStore.installations.stream()
-        .filter(i -> i.getId().equals(installation.getId()))
-        .findFirst().get()
-        .setManagerFeedback(installation.getManagerFeedback());
+    // construct URI
+    URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/installations/"
+        + created.getId());
 
-    return Response.ok(installation).build();
+    // return response with the newly created resource's uri
+    return Response.created(uri).build();
   }
 
   @DELETE
   @Path("/{id}")
   public Response delete(final @PathParam("id") String id) {
-    // TODO check if belongs to user
-    // TODO remove from database
-    log.info("deleting installation {} ", id);
+    // fail fast and return error if does not exist
+    // check for existence of the entity
+    if (InstallationStore.getById(id) == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
 
+    InstallationStore.delete(id);
     return Response.ok().build();
   }
 
