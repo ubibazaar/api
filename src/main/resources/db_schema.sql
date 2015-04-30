@@ -46,7 +46,7 @@ CREATE TABLE `manager_type` (
   `name` varchar(50) NOT NULL,
   `platform_id` varchar(32) NOT NULL,
   `installation_method_id` varchar(32) NOT NULL,
-  `cardinality` enum('ONE,MANY,ALL') NOT NULL,
+  `cardinality` enum('ONE','MANY','ALL') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_manager_type_platform` (`platform_id`),
   KEY `FK_manager_type_installation_method` (`installation_method_id`),

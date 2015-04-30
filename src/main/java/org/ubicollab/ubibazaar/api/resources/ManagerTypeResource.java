@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.ubicollab.ubibazaar.api.store.MockStore;
+import org.ubicollab.ubibazaar.api.store.ManagerTypeStore;
 
 import com.google.gson.Gson;
 
@@ -21,17 +21,14 @@ public class ManagerTypeResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public String getAll() {
-    return new Gson().toJson(MockStore.managerTypes);
+    return new Gson().toJson(ManagerTypeStore.getManagerTypes());
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getById(@PathParam(value = "id") String id) {
-    return new Gson().toJson(MockStore.managerTypes.stream()
-        .filter(mt -> mt.getId().equals(id))
-        .findAny()
-        .get());
+    return new Gson().toJson(ManagerTypeStore.getById(id));
   }
 
   @GET
@@ -42,7 +39,7 @@ public class ManagerTypeResource {
       @QueryParam(value = "installation_method") String installationMethod
       ) {
     return new Gson()
-        .toJson(MockStore.managerTypes
+        .toJson(ManagerTypeStore.getManagerTypes()
             .stream()
             .filter(mt -> Objects.isNull(platform)
                 || mt.getPlatform().getId().equals(platform))
