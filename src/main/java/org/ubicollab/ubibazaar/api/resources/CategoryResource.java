@@ -6,7 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.ubicollab.ubibazaar.api.store.CategoryCache;
+import org.ubicollab.ubibazaar.api.store.CategoryStore;
 
 import com.google.gson.Gson;
 
@@ -17,14 +17,14 @@ public class CategoryResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public String getAll() {
-    return new Gson().toJson(CategoryCache.getCategoryTree(null));
+    return new Gson().toJson(CategoryStore.getCategorySubTree(null));
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getById(@PathParam(value = "id") String id) {
-    return new Gson().toJson(CategoryCache.getCategoryTree(id));
+    return new Gson().toJson(CategoryStore.getCategorySubTree(id));
   }
 
 }
