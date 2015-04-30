@@ -54,7 +54,7 @@ public class UserResource {
   @POST
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response save(User user) {
+  public Response create(User user) {
     User created = UserStore.createUser(user);
 
     // construct URI

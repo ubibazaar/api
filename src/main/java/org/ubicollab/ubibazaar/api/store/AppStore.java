@@ -89,7 +89,7 @@ public class AppStore {
     //FIXME properties are coming in empty :(
     
     // generate user id
-    app.setId(IdGenerator.generateId());
+    app.setId(StoreUtil.generateRandomId());
 
     // insert to all tables
     App insertedApp = insertApp(app);

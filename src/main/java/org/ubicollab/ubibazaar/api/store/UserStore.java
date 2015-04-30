@@ -15,7 +15,7 @@ public class UserStore {
 
   public static User createUser(User user) {
     // generate user id
-    user.setId(IdGenerator.generateId());
+    user.setId(StoreUtil.generateRandomId());
 
     // hash password
     user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));

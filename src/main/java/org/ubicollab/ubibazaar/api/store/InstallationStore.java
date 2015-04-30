@@ -75,7 +75,7 @@ public class InstallationStore {
 
   public static Installation create(Installation installation) {
     // generate user id
-    installation.setId(IdGenerator.generateId());
+    installation.setId(StoreUtil.generateRandomId());
 
     String sql = "INSERT INTO installation (id, app_id, device_id) VALUES (?,?,?)";
 

@@ -75,7 +75,7 @@ public class DeviceStore {
 
   public static Device create(Device device) {
     // generate user id
-    device.setId(IdGenerator.generateId());
+    device.setId(StoreUtil.generateRandomId());
 
     String sql = "INSERT INTO device (id, name, platform_id, owner_id) VALUES (?,?,?,?)";
 

@@ -110,7 +110,7 @@ public class ManagerStore {
 
   public static Manager create(Manager manager) {
     // generate user id
-    manager.setId(IdGenerator.generateId());
+    manager.setId(StoreUtil.generateRandomId());
 
     String sql = "INSERT INTO manager (id, name, platform_id, manager_type_id, owner_id) "
         + "VALUES (?,?,?,?,?)";

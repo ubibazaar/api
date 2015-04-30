@@ -2,9 +2,9 @@ package org.ubicollab.ubibazaar.api.store;
 
 import java.util.UUID;
 
-public class IdGenerator {
+public class StoreUtil {
 
-  public static final String generateId() {
+  public static final String generateRandomId() {
     return UUID.randomUUID().toString().replace("-", "");
   }
 
