@@ -1,9 +1,10 @@
 CREATE TABLE `user` (
   `id` varchar(32) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `username` varchar(50) NOT NULL,
+  `username` varchar(256) NOT NULL,
   `password` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 ;
 
