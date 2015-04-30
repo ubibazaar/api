@@ -10,7 +10,7 @@ import org.ubicollab.ubibazaar.api.store.MockStore;
 
 import com.google.gson.Gson;
 
-@Path("platform")
+@Path("platforms")
 public class PlatformResource {
 
   @GET

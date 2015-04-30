@@ -11,7 +11,7 @@ import org.ubicollab.ubibazaar.api.store.MockStore;
 import com.google.gson.Gson;
 
 
-@Path("installation_method")
+@Path("installation_methods")
 public class InstallationMethodResource {
 
   @GET

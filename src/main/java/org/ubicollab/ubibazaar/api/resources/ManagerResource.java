@@ -14,7 +14,7 @@ import org.ubicollab.ubibazaar.api.store.MockStore;
 
 import com.google.gson.Gson;
 
-@Path("manager")
+@Path("managers")
 public class ManagerResource {
 
   @GET

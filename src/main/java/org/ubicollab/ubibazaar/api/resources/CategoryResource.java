@@ -10,7 +10,7 @@ import org.ubicollab.ubibazaar.api.store.CategoryStore;
 
 import com.google.gson.Gson;
 
-@Path("category")
+@Path("categories")
 public class CategoryResource {
 
   @GET

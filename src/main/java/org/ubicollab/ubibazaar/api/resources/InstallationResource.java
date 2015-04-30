@@ -22,7 +22,7 @@ import org.ubicollab.ubibazaar.core.Installation;
 import com.google.gson.Gson;
 
 @Slf4j
-@Path("installation")
+@Path("installations")
 public class InstallationResource {
 
   @GET

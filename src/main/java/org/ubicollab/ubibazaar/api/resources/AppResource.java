@@ -14,7 +14,7 @@ import org.ubicollab.ubibazaar.api.store.MockStore;
 
 import com.google.gson.Gson;
 
-@Path("app")
+@Path("apps")
 public class AppResource {
 
   @GET
