@@ -70,11 +70,11 @@ public class AppResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(App app) {
     // create app
-    App createdApp = AppStore.create(app);
+    App created = AppStore.create(app);
 
     // construct URI
     URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/apps/"
-        + createdApp.getId());
+        + created.getId());
 
     // return response with the newly created resource's uri
     return Response.created(uri).build();
