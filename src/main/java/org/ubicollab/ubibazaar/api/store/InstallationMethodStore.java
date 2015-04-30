@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ubicollab.ubibazaar.core.InstallationMethod;
 
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 
 @Slf4j
 public class InstallationMethodStore {
@@ -28,8 +29,9 @@ public class InstallationMethodStore {
       try (ResultSet rs = ps.getResultSet()) {
         if (rs.next()) {
           String name = rs.getString("name");
-
-          return new InstallationMethod(id, name, getProperties(id));
+          String properties = new Gson().toJson(getProperties(id));
+          
+          return new InstallationMethod(id, name, properties);
         } else {
           return null;
         }
@@ -53,8 +55,10 @@ public class InstallationMethodStore {
         while (rs.next()) {
           String id = rs.getString("id");
           String name = rs.getString("name");
+          
+          String properties = new Gson().toJson(getProperties(id));
 
-          results.add(new InstallationMethod(id, name, getProperties(id)));
+          results.add(new InstallationMethod(id, name, properties));
         }
 
         return results;

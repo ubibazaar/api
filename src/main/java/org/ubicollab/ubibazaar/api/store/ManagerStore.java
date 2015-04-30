@@ -130,8 +130,7 @@ public class ManagerStore {
     }
   }
 
-  // FIXME should be returning?
-  public static Manager update(Manager manager) {
+  public static void update(Manager manager) {
     String sql = "UPDATE manager set name = ? WHERE id = ?";
 
     try (Connection conn = Database.getConnection();
@@ -139,8 +138,6 @@ public class ManagerStore {
       ps.setString(1, manager.getName());
       ps.setString(2, manager.getId());
       ps.execute();
-
-      return manager;
     } catch (SQLException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException("Database problem. See logs for details.", e);

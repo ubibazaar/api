@@ -19,6 +19,7 @@ import org.ubicollab.ubibazaar.core.User;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 
 @Slf4j
 public class AppStore {
@@ -40,7 +41,7 @@ public class AppStore {
           User user = UserStore.getUser(rs.getString("author_id"));
 
           Set<Category> categories = getCategories(id);
-          Map<String, String> properties = getProperties(id);
+          String properties = new Gson().toJson(getProperties(id));
 
           return new App(id, name, platform, user, description, categories, properties);
         } else {
@@ -72,7 +73,7 @@ public class AppStore {
           User user = UserStore.getUser(rs.getString("author_id"));
 
           Set<Category> categories = getCategories(id);
-          Map<String, String> properties = getProperties(id);
+          String properties = new Gson().toJson(getProperties(id));
 
           results.add(new App(id, name, platform, user, description, categories, properties));
         }
@@ -86,8 +87,6 @@ public class AppStore {
   }
 
   public static App create(App app) {
-    //FIXME properties are coming in empty :(
-    
     // generate user id
     app.setId(StoreUtil.generateRandomId());
 
@@ -100,8 +99,6 @@ public class AppStore {
   }
 
   public static App update(App app) {
-    //FIXME properties are coming in empty :(
-    
     // insert to all tables
     updateApp(app);
 
@@ -188,7 +185,6 @@ public class AppStore {
         PreparedStatement ps = conn.prepareStatement(sql)) {
 
       for (Category category : app.getCategory()) {
-
         ps.setString(1, app.getId());
         ps.setString(2, category.getId());
         ps.execute();
@@ -231,11 +227,15 @@ public class AppStore {
       if (app.getProperties() == null) {
         return;
       }
+      
+      Map<?, ?> props = new Gson().fromJson(app.getProperties(), Map.class);
 
-      for (Entry<String, String> property : app.getProperties().entrySet()) {
+      for (Object property : props.entrySet()) {
+        Entry<?, ?> i = (Entry<?, ?>) property;
+        
         ps.setString(1, app.getId());
-        ps.setString(2, property.getKey());
-        ps.setString(3, property.getValue());
+        ps.setString(2, (String)i.getKey());
+        ps.setString(3, (String)i.getValue());
         ps.execute();
       }
     } catch (SQLException e) {

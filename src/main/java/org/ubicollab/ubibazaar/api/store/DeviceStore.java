@@ -94,8 +94,7 @@ public class DeviceStore {
     }
   }
 
-  // FIXME should be returning?
-  public static Device update(Device device) {
+  public static void update(Device device) {
     String sql = "UPDATE device set name = ?, platform_id = ? WHERE id = ?";
 
     try (Connection conn = Database.getConnection();
@@ -104,8 +103,6 @@ public class DeviceStore {
       ps.setString(2, device.getPlatform().getId());
       ps.setString(3, device.getId());
       ps.execute();
-
-      return device;
     } catch (SQLException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException("Database problem. See logs for details.", e);
