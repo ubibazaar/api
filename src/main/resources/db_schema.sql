@@ -26,7 +26,6 @@ CREATE TABLE `installation_method` (
 CREATE TABLE `installation_method_property` (
   `installation_method_id` varchar(32) NOT NULL,
   `property_name` varchar(20) NOT NULL,
-  `property_value` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`installation_method_id`,`property_name`),
   CONSTRAINT `FK_installation_method_property_installation_method_` FOREIGN KEY (`installation_method_id`) REFERENCES `installation_method` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1

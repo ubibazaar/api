@@ -6,7 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.ubicollab.ubibazaar.api.store.MockStore;
+import org.ubicollab.ubibazaar.api.store.InstallationMethodStore;
 
 import com.google.gson.Gson;
 
@@ -18,16 +18,13 @@ public class InstallationMethodResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public String getAll() {
-    return new Gson().toJson(MockStore.installationMethods);
+    return new Gson().toJson(InstallationMethodStore.getPlatforms());
   }
 
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getById(@PathParam(value = "id") String id) {
-    return new Gson().toJson(MockStore.installationMethods.stream()
-        .filter(im -> im.getId().equals(id))
-        .findAny()
-        .get());
+    return new Gson().toJson(InstallationMethodStore.getById(id));
   }
 }
