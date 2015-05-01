@@ -13,9 +13,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.ubicollab.ubibazaar.api.ServerProperties;
 import org.ubicollab.ubibazaar.api.store.DeviceStore;
@@ -26,11 +28,17 @@ import com.google.gson.Gson;
 @Path("devices")
 public class DeviceResource {
 
+  @Context
+  SecurityContext context;
+
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    return Response.ok(new Gson().toJson(DeviceStore.getAll())).build();
+    return Response.ok(new Gson().toJson(DeviceStore.getAll().stream()
+        .filter(app -> ResourceUtil.hasAccess(context, app))
+        .collect(Collectors.toList())))
+        .build();
   }
 
   @GET
@@ -38,10 +46,11 @@ public class DeviceResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getById(@PathParam(value = "id") String id) {
     Device found = DeviceStore.getById(id);
+    String username = context.getUserPrincipal().getName();
 
     // fail fast and return error if does not exist
     // check for existence of the entity
-    if (found == null) {
+    if (found == null || !found.getOwner().getUsername().equals(username)) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
@@ -52,14 +61,12 @@ public class DeviceResource {
   @Path("query")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getForQuery(
-      @QueryParam(value = "platform") String platform,
-      @QueryParam(value = "owner") String owner
+      @QueryParam(value = "platform") String platform
       ) {
     return Response.ok(new Gson().toJson(DeviceStore.getAll().stream()
-        .filter(a -> Objects.isNull(platform)
-            || a.getPlatform().getId().equals(platform))
-        .filter(a -> Objects.isNull(owner)
-            || a.getOwner().getId().equals(owner))
+        .filter(app -> Objects.isNull(platform)
+            || app.getPlatform().getId().equals(platform))
+        .filter(app -> ResourceUtil.hasAccess(context, app))
         .collect(Collectors.toList())))
         .build();
   }
@@ -92,9 +99,11 @@ public class DeviceResource {
       return Response.status(Status.BAD_REQUEST).build();
     }
 
+    Device found = DeviceStore.getById(id);
     // fail fast and return error if does not exist
     // check for existence of the entity
-    if (DeviceStore.getById(id) == null) {
+    // check for access by user
+    if (found == null || ResourceUtil.hasAccess(context, found)) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
@@ -107,9 +116,12 @@ public class DeviceResource {
   @DELETE
   @Path("/{id}")
   public Response delete(@PathParam(value = "id") String id) {
+    Device found = DeviceStore.getById(id);
+
     // fail fast and return error if does not exist
     // check for existence of the entity
-    if (DeviceStore.getById(id) == null) {
+    // check for access by user
+    if (found == null || ResourceUtil.hasAccess(context, found)) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 

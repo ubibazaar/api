@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -13,9 +14,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.ubicollab.ubibazaar.api.ServerProperties;
 import org.ubicollab.ubibazaar.api.store.ManagerStore;
@@ -23,14 +26,20 @@ import org.ubicollab.ubibazaar.core.Manager;
 
 import com.google.gson.Gson;
 
+@RolesAllowed("user")
 @Path("managers")
 public class ManagerResource {
+
+  @Context
+  SecurityContext context;
 
   @GET
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    return Response.ok(new Gson().toJson(ManagerStore.getAll())).build();
+    return Response.ok(new Gson().toJson(ManagerStore.getAll().stream()
+        .filter(manager -> ResourceUtil.hasAccess(context, manager))
+        .collect(Collectors.toList()))).build();
   }
 
   @GET
@@ -41,10 +50,10 @@ public class ManagerResource {
 
     // fail fast and return error if does not exist
     // check for existence of the entity
-    if (found == null) {
+    if (found == null || !ResourceUtil.hasAccess(context, found)) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    
+
     return Response.ok(new Gson().toJson(found)).build();
   }
 
@@ -53,26 +62,26 @@ public class ManagerResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getForQuery(
       @QueryParam(value = "type") String type,
-      @QueryParam(value = "owner") String owner,
       @QueryParam(value = "device") String device
       ) {
     return Response.ok(new Gson().toJson(ManagerStore.getAll().stream()
-            .filter(manager -> Objects.isNull(type)
-                || manager.getType().getId().equals(type))
-            .filter(manager -> Objects.isNull(owner)
-                || manager.getOwner().getId().equals(owner))
-            .filter(manager -> Objects.isNull(device)
-                || manager.getDevices().stream()
-                    .filter(d -> d.getId().equals(device))
-                    .collect(Collectors.toSet())
-                    .size() > 0)
-            .collect(Collectors.toList()))).build();
+        .filter(manager -> Objects.isNull(type)
+            || manager.getType().getId().equals(type))
+        .filter(manager -> ResourceUtil.hasAccess(context, manager))
+        .filter(manager -> Objects.isNull(device)
+            || manager.getDevices().stream()
+                .filter(d -> d.getId().equals(device))
+                .collect(Collectors.toSet())
+                .size() > 0)
+        .collect(Collectors.toList()))).build();
   }
-  
+
   @POST
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(Manager manager) {
+    // FIXME check if the devices belong to user
+
     // create manager
     Manager created = ManagerStore.create(manager);
 
@@ -95,31 +104,33 @@ public class ManagerResource {
     } else if (!manager.getId().equals(id)) {
       // different id in url and in entity
       return Response.status(Status.BAD_REQUEST).build();
-    } 
-    
+    }
+
+    Manager found = ManagerStore.getById(id);
     // fail fast and return error if does not exist
     // check for existence of the entity
-    if (ManagerStore.getById(id) == null) {
+    if (found == null || !ResourceUtil.hasAccess(context, found)) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    
+
     // update
     ManagerStore.update(manager);
-    
+
     return Response.ok().build();
   }
 
   @DELETE
   @Path("/{id}")
   public Response delete(@PathParam(value = "id") String id) {
+    Manager found = ManagerStore.getById(id);
     // fail fast and return error if does not exist
     // check for existence of the entity
-    if (ManagerStore.getById(id) == null) {
+    if (found == null || !ResourceUtil.hasAccess(context, found)) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     ManagerStore.delete(id);
     return Response.ok().build();
   }
-  
+
 }

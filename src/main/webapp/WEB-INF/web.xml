@@ -3,9 +3,50 @@
 	xmlns="http://java.sun.com/xml/ns/javaee"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="UbiBazaar" version="3.0">
-	<display-name>UbiBazaar</display-name>
+	<display-name>UbiBazaar API</display-name>
 	<error-page>
 		<error-code>404</error-code>
 		<location>/404.html</location>
 	</error-page>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>devices</web-resource-name>
+			<url-pattern>/resources/devices/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>user</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>installations</web-resource-name>
+			<url-pattern>/resources/installations/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>user</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>managers</web-resource-name>
+			<url-pattern>/resources/managers/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>user</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>ubibazaar-api-realm</realm-name>
+	</login-config>
+
+	<security-role>
+		<role-name>admin</role-name>
+	</security-role>
+	<security-role>
+		<role-name>developer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>user</role-name>
+	</security-role>
 </web-app>
