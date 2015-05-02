@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.ubicollab.ubibazaar.api.ServerProperties;
+import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.AppStore;
 import org.ubicollab.ubibazaar.core.App;
 
@@ -73,7 +73,7 @@ public class AppResource {
     App created = AppStore.create(app);
 
     // construct URI
-    URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/apps/"
+    URI uri = URI.create(ApiProperties.API_URL + "/resources/apps/"
         + created.getId());
 
     // return response with the newly created resource's uri

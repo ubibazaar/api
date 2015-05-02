@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import org.ubicollab.ubibazaar.api.ServerProperties;
+import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.DeviceStore;
 import org.ubicollab.ubibazaar.api.store.InstallationStore;
 import org.ubicollab.ubibazaar.core.Device;
@@ -88,7 +88,7 @@ public class InstallationResource {
     Installation created = InstallationStore.create(installation);
 
     // construct URI
-    URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/installations/"
+    URI uri = URI.create(ApiProperties.API_URL + "/resources/installations/"
         + created.getId());
 
     // return response with the newly created resource's uri

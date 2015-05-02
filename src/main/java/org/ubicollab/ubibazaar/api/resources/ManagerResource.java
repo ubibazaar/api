@@ -20,8 +20,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
-import org.ubicollab.ubibazaar.api.ServerProperties;
+import org.ubicollab.ubibazaar.api.ApiProperties;
+import org.ubicollab.ubibazaar.api.store.DeviceStore;
 import org.ubicollab.ubibazaar.api.store.ManagerStore;
+import org.ubicollab.ubibazaar.core.Cardinality;
 import org.ubicollab.ubibazaar.core.Manager;
 
 import com.google.gson.Gson;
@@ -54,6 +56,12 @@ public class ManagerResource {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    // if manager doesn't have ALL cardinality, we might want to include installation instructions..
+    // go and fetch instructions in case the manager is not installed (check inside)
+    if (!found.getType().getDevicePairingCardinality().equals(Cardinality.ALL)) {
+      ManagerStore.setInstallationInstructions(found);
+    }
+
     return Response.ok(new Gson().toJson(found)).build();
   }
 
@@ -80,13 +88,20 @@ public class ManagerResource {
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(Manager manager) {
-    // FIXME check if the devices belong to user
+    // check if all devices belongs to the right user
+    boolean allDevicesBelongToUser = manager.getDevices().stream()
+        .map(receivedDevice -> DeviceStore.getById(receivedDevice.getId()))
+        .allMatch(storedDevice -> ResourceUtil.hasAccess(context, storedDevice));
+    
+    if(!allDevicesBelongToUser) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
 
     // create manager
     Manager created = ManagerStore.create(manager);
 
     // construct URI
-    URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/managers/"
+    URI uri = URI.create(ApiProperties.API_URL + "/resources/managers/"
         + created.getId());
 
     // return response with the newly created resource's uri
@@ -104,6 +119,15 @@ public class ManagerResource {
     } else if (!manager.getId().equals(id)) {
       // different id in url and in entity
       return Response.status(Status.BAD_REQUEST).build();
+    }
+    
+    // check if all devices belongs to the right user
+    boolean allDevicesBelongToUser = manager.getDevices().stream()
+        .map(receivedDevice -> DeviceStore.getById(receivedDevice.getId()))
+        .allMatch(storedDevice -> ResourceUtil.hasAccess(context, storedDevice));
+    
+    if(!allDevicesBelongToUser) {
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     Manager found = ManagerStore.getById(id);

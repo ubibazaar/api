@@ -12,7 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.ubicollab.ubibazaar.api.ServerProperties;
+import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.UserStore;
 import org.ubicollab.ubibazaar.core.User;
 
@@ -58,7 +58,7 @@ public class UserResource {
     User created = UserStore.createUser(user);
 
     // construct URI
-    URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/users/"
+    URI uri = URI.create(ApiProperties.API_URL + "/resources/users/"
         + created.getId());
 
     // return response with the newly created resource's uri

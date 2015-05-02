@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
-import org.ubicollab.ubibazaar.api.ServerProperties;
+import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.DeviceStore;
 import org.ubicollab.ubibazaar.core.Device;
 
@@ -79,7 +79,7 @@ public class DeviceResource {
     Device created = DeviceStore.create(device);
 
     // construct URI
-    URI uri = URI.create(ServerProperties.SERVER_URL + "/resources/devices/"
+    URI uri = URI.create(ApiProperties.API_URL + "/resources/devices/"
         + created.getId());
 
     // return response with the newly created resource's uri
