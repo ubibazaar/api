@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,6 +16,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.ubicollab.ubibazaar.api.ApiProperties;
@@ -93,6 +95,31 @@ public class InstallationResource {
 
     // return response with the newly created resource's uri
     return Response.created(uri).build();
+  }
+  
+  @PUT
+  @Path("/{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response update(@PathParam(value = "id") String id, Installation installation) {
+    // first make sure the id in url and in entity are the same...
+    if (installation.getId() == null) {
+      // complete the missing id in installation entity and continue
+      installation.setId(id);
+    } else if (!installation.getId().equals(id)) {
+      // different id in url and in entity
+      return Response.status(Status.BAD_REQUEST).build();
+    } 
+    
+    // fail fast and return error if does not exist
+    // check for existence of the entity
+    if (InstallationStore.getById(id) == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    
+    // update
+    InstallationStore.update(installation);
+    
+    return Response.ok().build();
   }
 
   @DELETE

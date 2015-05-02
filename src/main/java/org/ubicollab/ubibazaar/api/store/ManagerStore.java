@@ -43,8 +43,9 @@ public class ManagerStore {
           ManagerType managerType = ManagerTypeStore.getById(rs.getString("manager_type_id"));
           User owner = UserStore.getUser(rs.getString("owner_id"));
           Set<Device> devices = findManagedDevices(id);
+          Boolean installed = rs.getBoolean("installed");
 
-          return new Manager(id, name, managerType, owner, devices, null);
+          return new Manager(id, name, managerType, owner, devices, null, installed);
         } else {
           return null;
         }
@@ -105,8 +106,9 @@ public class ManagerStore {
           User owner = UserStore.getUser(rs.getString("owner_id"));
 
           Set<Device> devices = findManagedDevices(id);
-
-          results.add(new Manager(id, name, managerType, owner, devices, null));
+          Boolean installed = rs.getBoolean("installed");
+          
+          results.add(new Manager(id, name, managerType, owner, devices, null, installed));
         }
 
         return results;
@@ -140,12 +142,13 @@ public class ManagerStore {
   }
 
   public static void update(Manager manager) {
-    String sql = "UPDATE manager set name = ? WHERE id = ?";
+    String sql = "UPDATE manager set name = ?, installed = ? WHERE id = ?";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, manager.getName());
-      ps.setString(2, manager.getId());
+      ps.setBoolean(2, manager.getInstalled());
+      ps.setString(3, manager.getId());
       ps.execute();
     } catch (SQLException e) {
       log.error(e.getMessage(), e);

@@ -11,9 +11,14 @@
 		<principal-name>developer</principal-name>
 		<group-name>developer</group-name>
 	</security-role-mapping>
-		<security-role-mapping>
+	<security-role-mapping>
 		<role-name>user</role-name>
 		<principal-name>user</principal-name>
 		<group-name>user</group-name>
+	</security-role-mapping>
+	<security-role-mapping>
+		<role-name>manager</role-name>
+		<principal-name>manager</principal-name>
+		<group-name>manager</group-name>
 	</security-role-mapping>
 </glassfish-web-app>

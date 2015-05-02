@@ -75,21 +75,29 @@ public class InstallationStore {
     }
   }
 
-  public static Installation create(Installation app) {
+  public static Installation create(Installation installation) {
     // generate user id
-    app.setId(StoreUtil.generateRandomId());
+    installation.setId(StoreUtil.generateRandomId());
 
     // insert to all tables
-    Installation inserted = insertInstallation(app);
+    Installation inserted = insertInstallation(installation);
     insertProperties(inserted);
 
     return inserted;
   }
 
-  private static Installation insertInstallation(Installation installation) {
-    // generate user id
-    installation.setId(StoreUtil.generateRandomId());
+  public static void update(Installation installation) {
+    // only properties are updated
+    deleteProperties(installation.getId());
+    insertProperties(installation);
+  }
 
+  public static void delete(String installationId) {
+    deleteProperties(installationId);
+    deleteInstallation(installationId);
+  }
+
+  private static Installation insertInstallation(Installation installation) {
     String sql = "INSERT INTO installation (id, app_id, device_id) VALUES (?,?,?)";
 
     try (Connection conn = Database.getConnection();
@@ -106,8 +114,22 @@ public class InstallationStore {
     }
   }
 
-  public static void delete(String installationId) {
+  private static void deleteInstallation(String installationId) {
     String sql = "DELETE FROM installation WHERE id = ?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+
+      ps.setString(1, installationId);
+      ps.execute();
+    } catch (SQLException e) {
+      log.error(e.getMessage(), e);
+      throw new RuntimeException("Database problem. See logs for details.", e);
+    }
+  }
+
+  private static void deleteProperties(String installationId) {
+    String sql = "DELETE FROM installation_property WHERE installation_id = ?";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
