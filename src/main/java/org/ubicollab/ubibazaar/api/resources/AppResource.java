@@ -52,6 +52,7 @@ public class AppResource {
   @Path("query")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getForQuery(
+      @QueryParam(value = "category") String category,
       @QueryParam(value = "platform") String platform,
       @QueryParam(value = "author") String author
       ) {
@@ -60,6 +61,9 @@ public class AppResource {
             || a.getPlatform().getId().equals(platform))
         .filter(a -> Objects.isNull(author)
             || a.getAuthor().getId().equals(author))
+        .filter(a -> Objects.isNull(category)
+            || a.getCategory().stream().anyMatch(x -> x.getId().equals(category)))
+            //FIXME what about subcategories?
         .collect(Collectors.toList())))
         .build();
   }
