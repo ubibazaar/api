@@ -38,18 +38,30 @@ public class ManagerStore {
 
       try (ResultSet rs = ps.getResultSet()) {
         if (rs.next()) {
-          String name = rs.getString("name");
-
           ManagerType managerType = ManagerTypeStore.getById(rs.getString("manager_type_id"));
           User owner = UserStore.getUser(rs.getString("owner_id"));
           Set<Device> devices = findManagedDevices(id);
           Boolean installed = rs.getBoolean("installed");
 
-          return new Manager(id, name, managerType, owner, devices, null, installed);
+          return new Manager(id, managerType, owner, devices, null, installed);
         } else {
           return null;
         }
       }
+    } catch (SQLException e) {
+      log.error(e.getMessage(), e);
+      throw new RuntimeException("Database problem. See logs for details.", e);
+    }
+  }
+  
+  public static void linkDeviceToManager(String managerId, String deviceId) {
+    String sql = "INSERT INTO managed_device (manager_id, device_id) VALUES (?,?)";
+
+    try (Connection conn = Database.getConnection();
+      PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, managerId);
+      ps.setString(2, deviceId);
+      ps.execute();
     } catch (SQLException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException("Database problem. See logs for details.", e);
@@ -100,7 +112,6 @@ public class ManagerStore {
 
         while (rs.next()) {
           String id = rs.getString("id");
-          String name = rs.getString("name");
 
           ManagerType managerType = ManagerTypeStore.getById(rs.getString("manager_type_id"));
           User owner = UserStore.getUser(rs.getString("owner_id"));
@@ -108,7 +119,7 @@ public class ManagerStore {
           Set<Device> devices = findManagedDevices(id);
           Boolean installed = rs.getBoolean("installed");
           
-          results.add(new Manager(id, name, managerType, owner, devices, null, installed));
+          results.add(new Manager(id, managerType, owner, devices, null, installed));
         }
 
         return results;
@@ -123,15 +134,15 @@ public class ManagerStore {
     // generate user id
     manager.setId(StoreUtil.generateRandomId());
 
-    String sql = "INSERT INTO manager (id, name, platform_id, manager_type_id, owner_id) "
-        + "VALUES (?,?,?,?,?)";
+    String sql = "INSERT INTO manager (id, manager_type_id, owner_id, `key`) "
+        + "VALUES (?,?,?,?)";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, manager.getId());
-      ps.setString(2, manager.getName());
-      ps.setString(4, manager.getType().getId());
-      ps.setString(4, manager.getOwner().getId());
+      ps.setString(2, manager.getType().getId());
+      ps.setString(3, manager.getOwner().getId());
+      ps.setString(4, StoreUtil.generateRandomId());
       ps.execute();
 
       return manager;
@@ -142,13 +153,12 @@ public class ManagerStore {
   }
 
   public static void update(Manager manager) {
-    String sql = "UPDATE manager set name = ?, installed = ? WHERE id = ?";
+    String sql = "UPDATE manager set installed = ? WHERE id = ?";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, manager.getName());
-      ps.setBoolean(2, manager.getInstalled());
-      ps.setString(3, manager.getId());
+      ps.setBoolean(1, manager.getInstalled());
+      ps.setString(2, manager.getId());
       ps.execute();
     } catch (SQLException e) {
       log.error(e.getMessage(), e);
@@ -199,9 +209,9 @@ public class ManagerStore {
             StringWriter urlWriter = new StringWriter();
             mf.compile(new StringReader(url), "url")
                 .execute(urlWriter, ImmutableMap.builder()
-                    .put("id", id)
-                    .put("key", key)
-                    .put("server", ApiProperties.API_URL)
+                    .put("id", ""+id)
+                    .put("key", ""+key)
+                    .put("server", ""+ApiProperties.API_URL)
                     .build())
                 .flush();
 

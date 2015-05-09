@@ -131,13 +131,11 @@ CREATE TABLE `manager_type` (
 
 CREATE TABLE `manager` (
   `id` varchar(32) NOT NULL,
-  `name` varchar(50) NOT NULL,
   `owner_id` varchar(32) NOT NULL,
   `manager_type_id` varchar(32) NOT NULL,
   `key` varchar(32) DEFAULT NULL,
   `installed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UC_manager_owner_name` (`owner_id`, `name`),
   CONSTRAINT `FK_manager_manager_type` FOREIGN KEY (`manager_type_id`) REFERENCES `manager_type` (`id`),
   CONSTRAINT `FK_manager_owner` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
