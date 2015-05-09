@@ -60,10 +60,10 @@ public class ManagerStore {
     String sql =
         ""
             + "select d.id "
-            + "from ubibazaar.device d "
-            + "join ubibazaar.manager m on m.owner_id = d.owner_id "
-            + "join ubibazaar.manager_type mt on mt.id = m.manager_type_id and mt.platform_id = d.platform_id "
-            + "left join ubibazaar.managed_device md on md.device_id = d.id and md.manager_id = m.id "
+            + "from device d "
+            + "join manager m on m.owner_id = d.owner_id "
+            + "join manager_type mt on mt.id = m.manager_type_id and mt.platform_id = d.platform_id "
+            + "left join managed_device md on md.device_id = d.id and md.manager_id = m.id "
             + "where ((md.device_id is not null) or (mt.cardinality = 'ALL')) "
             + "and m.id = ?";
 
