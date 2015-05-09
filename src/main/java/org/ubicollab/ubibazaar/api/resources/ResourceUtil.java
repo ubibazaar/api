@@ -19,10 +19,6 @@ public class ResourceUtil {
   }
 
   public static final boolean hasAccess(SecurityContext context, Manager manager) {
-    System.out.println(context.getUserPrincipal());
-    System.out.println("user?" + context.isUserInRole("user"));
-    System.out.println("manager?" + context.isUserInRole("manager"));
-    
     if (context.isUserInRole("user")) {
       return manager.getOwner().getUsername().equals(context.getUserPrincipal().getName());
     } else if (context.isUserInRole("manager")) {
