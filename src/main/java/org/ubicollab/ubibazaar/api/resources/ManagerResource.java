@@ -1,10 +1,10 @@
 package org.ubicollab.ubibazaar.api.resources;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -24,11 +24,11 @@ import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.DeviceStore;
 import org.ubicollab.ubibazaar.api.store.ManagerStore;
 import org.ubicollab.ubibazaar.core.Cardinality;
+import org.ubicollab.ubibazaar.core.Device;
 import org.ubicollab.ubibazaar.core.Manager;
 
 import com.google.gson.Gson;
 
-@RolesAllowed("user")
 @Path("managers")
 public class ManagerResource {
 
@@ -39,7 +39,15 @@ public class ManagerResource {
   @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAll() {
-    return Response.ok(new Gson().toJson(ManagerStore.getAll().stream()
+    Collection<Manager> found = ManagerStore.getAll();
+    
+    // set installation instructions
+    found.stream()
+      .filter(manager -> !manager.getInstalled())
+      .filter(manager -> !manager.getType().getDevicePairingCardinality().equals(Cardinality.ALL))
+      .forEach(manager -> ManagerStore.setInstallationInstructions(manager));
+    
+    return Response.ok(new Gson().toJson(found.stream()
         .filter(manager -> ResourceUtil.hasAccess(context, manager))
         .collect(Collectors.toList()))).build();
   }
@@ -72,7 +80,15 @@ public class ManagerResource {
       @QueryParam(value = "type") String type,
       @QueryParam(value = "device") String device
       ) {
-    return Response.ok(new Gson().toJson(ManagerStore.getAll().stream()
+    Collection<Manager> found = ManagerStore.getAll();
+
+    // set installation instructions
+    found.stream()
+      .filter(manager -> !manager.getInstalled())
+      .filter(manager -> !manager.getType().getDevicePairingCardinality().equals(Cardinality.ALL))
+      .forEach(manager -> ManagerStore.setInstallationInstructions(manager));
+    
+    return Response.ok(new Gson().toJson(found.stream()
         .filter(manager -> Objects.isNull(type)
             || manager.getType().getId().equals(type))
         .filter(manager -> ResourceUtil.hasAccess(context, manager))
@@ -88,14 +104,14 @@ public class ManagerResource {
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(Manager manager) {
-    // check if all devices belongs to the right user
-    boolean allDevicesBelongToUser = manager.getDevices().stream()
-        .map(receivedDevice -> DeviceStore.getById(receivedDevice.getId()))
-        .allMatch(storedDevice -> ResourceUtil.hasAccess(context, storedDevice));
-    
-    if(!allDevicesBelongToUser) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
+//    // check if all devices belongs to the right user
+//    boolean allDevicesBelongToUser = manager.getDevices().stream()
+//        .map(receivedDevice -> DeviceStore.getById(receivedDevice.getId()))
+//        .allMatch(storedDevice -> ResourceUtil.hasAccess(context, storedDevice));
+//    
+//    if(!allDevicesBelongToUser) {
+//      return Response.status(Response.Status.NOT_FOUND).build();
+//    }
 
     // create manager
     Manager created = ManagerStore.create(manager);
