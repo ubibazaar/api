@@ -17,6 +17,7 @@ import org.ubicollab.ubibazaar.core.Category;
 import org.ubicollab.ubibazaar.core.Platform;
 import org.ubicollab.ubibazaar.core.User;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -157,19 +158,19 @@ public class AppStore {
 
   private static Set<Category> getCategories(String id) {
     String sql = "SELECT * FROM app_category WHERE app_id = ?";
-  
+
     try (Connection conn = Database.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, id);
       ps.execute();
-  
+
       try (ResultSet rs = ps.getResultSet()) {
         Set<Category> results = Sets.newHashSet();
-  
+
         while (rs.next()) {
           results.add(CategoryStore.getCategoryAncestry(rs.getString("category_id")));
         }
-  
+
         return results;
       }
     } catch (SQLException e) {
@@ -179,6 +180,10 @@ public class AppStore {
   }
 
   private static void insertCategories(App app) {
+    if (app.getCategory() == null) {
+      return;
+    }
+
     String sql = "INSERT INTO app_category (app_id, category_id) VALUES (?,?)";
 
     try (Connection conn = Database.getConnection();
@@ -197,19 +202,19 @@ public class AppStore {
 
   private static Map<String, String> getProperties(String id) {
     String sql = "SELECT * FROM app_property WHERE app_id = ?";
-  
+
     try (Connection conn = Database.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, id);
       ps.execute();
-  
+
       try (ResultSet rs = ps.getResultSet()) {
         Map<String, String> results = Maps.newHashMap();
-  
+
         while (rs.next()) {
           results.put(rs.getString("property_name"), rs.getString("property_value"));
         }
-  
+
         return results;
       }
     } catch (SQLException e) {
@@ -219,6 +224,10 @@ public class AppStore {
   }
 
   private static void insertProperties(App app) {
+    if (Strings.isNullOrEmpty(app.getProperties())) {
+      return;
+    }
+
     String sql = "INSERT INTO app_property (app_id, property_name, property_value) VALUES (?,?,?)";
 
     try (Connection conn = Database.getConnection();
@@ -227,15 +236,15 @@ public class AppStore {
       if (app.getProperties() == null) {
         return;
       }
-      
+
       Map<?, ?> props = new Gson().fromJson(app.getProperties(), Map.class);
 
       for (Object property : props.entrySet()) {
         Entry<?, ?> i = (Entry<?, ?>) property;
-        
+
         ps.setString(1, app.getId());
-        ps.setString(2, (String)i.getKey());
-        ps.setString(3, (String)i.getValue());
+        ps.setString(2, (String) i.getKey());
+        ps.setString(3, (String) i.getValue());
         ps.execute();
       }
     } catch (SQLException e) {
