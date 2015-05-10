@@ -73,6 +73,8 @@ public class UserStore {
           String username = rs.getString("username");
           String name = rs.getString("name");
           String password = rs.getString("password");
+          // null password, we do not want to send it out
+          password = null;
 
           return new User(id, username, name, password);
         } else {
@@ -98,6 +100,8 @@ public class UserStore {
           String id = rs.getString("id");
           String name = rs.getString("name");
           String password = rs.getString("password");
+          // null password, we do not want to send it out
+          password = null;
 
           return new User(id, username, name, password);
         } else {
@@ -108,6 +112,14 @@ public class UserStore {
       log.error(e.getMessage(), e);
       throw new RuntimeException("Database problem. See logs for details.", e);
     }
+  }
+  
+  public static void main(String[] args) {
+    String hashed = "$2a$10$moaNi7n5UMPApaVKHB6o2eTEEtGC6/KRVkZFSRhCdsRRMNJFs2d0.";
+    
+    System.out.println(
+        BCrypt.checkpw("x", hashed)
+        );
   }
 
 }
