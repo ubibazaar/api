@@ -6,12 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.ubicollab.ubibazaar.core.InstallationMethod;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 
@@ -69,7 +71,7 @@ public class InstallationMethodStore {
     }
   }
 
-  private static Set<String> getProperties(String id) {
+  private static Map<String, String> getProperties(String id) {
     String sql = "SELECT * FROM installation_method_property WHERE installation_method_id = ?";
 
     try (Connection conn = Database.getConnection();
@@ -78,10 +80,10 @@ public class InstallationMethodStore {
       ps.execute();
 
       try (ResultSet rs = ps.getResultSet()) {
-        Set<String> results = Sets.newHashSet();
+        Map<String, String> results = Maps.newHashMap();
 
         while (rs.next()) {
-          results.add(rs.getString("property_name"));
+          results.put(rs.getString("property_name"), rs.getString("property_description"));
         }
 
         return results;
