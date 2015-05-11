@@ -21,10 +21,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.ubicollab.ubibazaar.api.ApiProperties;
-import org.ubicollab.ubibazaar.api.store.DeviceStore;
 import org.ubicollab.ubibazaar.api.store.ManagerStore;
 import org.ubicollab.ubibazaar.core.Cardinality;
-import org.ubicollab.ubibazaar.core.Device;
 import org.ubicollab.ubibazaar.core.Manager;
 
 import com.google.gson.Gson;
@@ -137,15 +135,6 @@ public class ManagerResource {
       return Response.status(Status.BAD_REQUEST).build();
     }
     
-    // check if all devices belongs to the right user
-    boolean allDevicesBelongToUser = manager.getDevices().stream()
-        .map(receivedDevice -> DeviceStore.getById(receivedDevice.getId()))
-        .allMatch(storedDevice -> ResourceUtil.hasAccess(context, storedDevice));
-    
-    if(!allDevicesBelongToUser) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
-
     Manager found = ManagerStore.getById(id);
     // fail fast and return error if does not exist
     // check for existence of the entity
@@ -155,7 +144,6 @@ public class ManagerResource {
 
     // update
     ManagerStore.update(manager);
-
     return Response.ok().build();
   }
 
