@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +39,8 @@ public class UserStore {
       ps.execute();
 
       return user;
+    } catch(SQLIntegrityConstraintViolationException e) {
+      throw new IllegalArgumentException("This username is already taken.");
     } catch (SQLException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException("Database problem. See logs for details.", e);

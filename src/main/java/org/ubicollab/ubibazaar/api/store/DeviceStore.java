@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Set;
@@ -88,6 +89,8 @@ public class DeviceStore {
       ps.execute();
 
       return device;
+    } catch(SQLIntegrityConstraintViolationException e) {
+      throw new IllegalArgumentException("Device with this name already exists.");
     } catch (SQLException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException("Database problem. See logs for details.", e);

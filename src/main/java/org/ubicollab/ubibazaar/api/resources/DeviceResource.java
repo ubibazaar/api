@@ -75,6 +75,7 @@ public class DeviceResource {
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(Device device) {
+    try {
     // create device
     Device created = DeviceStore.create(device);
 
@@ -84,6 +85,11 @@ public class DeviceResource {
 
     // return response with the newly created resource's uri
     return Response.created(uri).build();
+    } catch(IllegalArgumentException e) {
+      return Response.status(Status.BAD_REQUEST)
+          .entity(e.getMessage())
+          .build();
+      } 
   }
 
   @PUT

@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.UserStore;
@@ -55,14 +56,20 @@ public class UserResource {
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response create(User user) {
-    User created = UserStore.createUser(user);
-
-    // construct URI
-    URI uri = URI.create(ApiProperties.API_URL + "/resources/users/"
-        + created.getId());
-
-    // return response with the newly created resource's uri
-    return Response.created(uri).build();
+    try {
+      User created = UserStore.createUser(user);
+  
+      // construct URI
+      URI uri = URI.create(ApiProperties.API_URL + "/resources/users/"
+          + created.getId());
+  
+      // return response with the newly created resource's uri
+      return Response.created(uri).build();
+    } catch(IllegalArgumentException e) {
+      return Response.status(Status.BAD_REQUEST)
+        .entity(e.getMessage())
+        .build();
+    } 
   }
 
 }
