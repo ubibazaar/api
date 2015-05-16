@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import org.ubicollab.ubibazaar.api.ApiProperties;
 import org.ubicollab.ubibazaar.api.store.AppStore;
 import org.ubicollab.ubibazaar.core.App;
+import org.ubicollab.ubibazaar.core.Category;
 
 import com.google.gson.Gson;
 
@@ -62,8 +63,7 @@ public class AppResource {
         .filter(a -> Objects.isNull(author)
             || a.getAuthor().getId().equals(author))
         .filter(a -> Objects.isNull(category)
-            || a.getCategory().stream().anyMatch(x -> x.getId().equals(category)))
-            //FIXME what about subcategories?
+            || a.getCategory().stream().anyMatch(x -> hasAncestor(x, category)))
         .collect(Collectors.toList())))
         .build();
   }
@@ -120,6 +120,19 @@ public class AppResource {
 
     AppStore.delete(id);
     return Response.ok().build();
+  }
+  
+  boolean hasAncestor(Category category, String ancestor) {
+    if(category.getId().equals(ancestor)) {
+      return true;
+    }
+    
+    if(category.getParent() == null) {
+      return false;
+    } else {
+      return hasAncestor(category.getParent(), ancestor);
+    }
+    
   }
 
 
